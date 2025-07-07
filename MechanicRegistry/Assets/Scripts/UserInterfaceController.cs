@@ -34,7 +34,18 @@ public class UserInterfaceController : MonoBehaviour
         card.transform.parent = contentScrollView.transform;
         card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,-335 -(appController.cards.Count-1)*80);
         card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        card.GetComponent<PieseCardController>().id=appController.cards.Count-1;
         contentScrollView.sizeDelta = new Vector2(0, contentScrollView.sizeDelta.y + 85);
+        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cards.Count - 1) * 80);
+        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cards.Count - 1) * 80);
+    }
+    public void UpdateCardPositions()
+    {
+        for(int i = 0; i < appController.cards.Count;i++)
+        {
+            appController.cards[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -335 - i * 80);
+            appController.cards[i].GetComponent<PieseCardController>().id = i;
+        }
         addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cards.Count - 1) * 80);
         finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cards.Count - 1) * 80);
     }

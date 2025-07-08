@@ -1,18 +1,50 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class AppController : MonoBehaviour
 {
-    public List<GameObject> cards;
+    public List<GameObject> cardsDeviz,cardsClient;
     [SerializeField] UserInterfaceController userInterfaceController;
     [SerializeField] private List<TMP_InputField> generalInputs;
+
+    //SavingPath
+    private string folderName = "MechanicRegistry";
+    private string fileName = "clientData.json";
+    string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+    string folderPath;
+    string filePath;
+    public List<Client> clients;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
+        // Step 2: Combine paths
+        folderPath = Path.Combine(documentsPath, folderName);
+        filePath = Path.Combine(folderPath, fileName);
+
+        // Step 3: Create folder if it doesn't exist
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+            Debug.Log("Created folder: " + folderPath);
+        }
+
+        // Step 4: Create file if it doesn't exist
+        if (!File.Exists(filePath))
+        {
+            File.WriteAllText(filePath, "[]"); // or default JSON content
+            Debug.Log("Created JSON file: " + filePath);
+        }
+        else
+        {
+            ReadFile();
+            userInterfaceController.CreareListaClienti();
+        }
     }
 
     // Update is called once per frame
@@ -22,7 +54,7 @@ public class AppController : MonoBehaviour
     }
     public void DeleteCard(int cardId)
     {
-        cards.RemoveAt(cardId);
+        cardsDeviz.RemoveAt(cardId);
         userInterfaceController.UpdateCardPositions();
     }
     public void TrimiteDeviz()
@@ -38,13 +70,13 @@ public class AppController : MonoBehaviour
                 i = generalInputs.Count;
             }
         }
-        for(int i = 0; i < cards.Count; i++)
+        for(int i = 0; i < cardsDeviz.Count; i++)
         {
-            Piese piesa = cards[i].GetComponent<PieseCardController>().GetData();
-            if (cards[i].GetComponent<PieseCardController>().GetData()==null)
+            Piese piesa = cardsDeviz[i].GetComponent<PieseCardController>().GetData();
+            if (cardsDeviz[i].GetComponent<PieseCardController>().GetData()==null)
             {
                 isGood = false;
-                i = cards.Count;
+                i = cardsDeviz.Count;
             }
             piese.Add(piesa);
         }
@@ -52,12 +84,51 @@ public class AppController : MonoBehaviour
         {
             int pret = int.Parse(generalInputs[6].text);
             var client = new Client(generalInputs[0].text, generalInputs[1].text, generalInputs[2].text, generalInputs[3].text, generalInputs[4].text, generalInputs[5].text, pret, piese);
-            string json = JsonConvert.SerializeObject(client, Formatting.Indented);
-            Debug.Log(json);
+            WriteOnFile(client);
+            ResetDeviz();
+            userInterfaceController.ResetListaClienti();
         }
         else
         {
             Debug.Log("noSendData");
         }
+    }
+    void WriteOnFile(Client newClient)
+    {
+        ReadFile();
+        clients.Add(newClient);
+        string updatedJson = JsonConvert.SerializeObject(clients, Formatting.Indented);
+        File.WriteAllText(filePath, updatedJson);
+
+        Debug.Log("Client data saved.");
+    }
+    void ReadFile()
+    {
+        if (File.Exists(filePath))
+        {
+            string json = File.ReadAllText(filePath);
+            clients = JsonConvert.DeserializeObject<List<Client>>(json);
+
+            if (clients == null)
+                clients = new List<Client>();
+        }
+        else
+        {
+            clients = new List<Client>();
+        }
+    }
+    void ResetDeviz()
+    {
+        for(int i=0;i<generalInputs.Count;i++)
+        {
+            generalInputs[i].text = string.Empty;
+        }
+        while (cardsDeviz.Count > 1)
+        {
+            Destroy(cardsDeviz[cardsDeviz.Count - 1]);
+            cardsDeviz.RemoveAt(cardsDeviz.Count-1);
+        }
+        cardsDeviz[0].GetComponent<PieseCardController>().ResetCard();
+        userInterfaceController.ResetButtons();
     }
 }

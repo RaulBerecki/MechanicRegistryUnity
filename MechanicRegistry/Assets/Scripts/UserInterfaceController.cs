@@ -1,9 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UserInterfaceController : MonoBehaviour
 {
+    //Menu
+    [SerializeField] GameObject cardClient,clientiContentScrollView;
+    [SerializeField] List<GameObject> cardsClient;
+    //Deviz
     [SerializeField] GameObject mainMenu, devizMenu,articolCard,addButton,finishButton;
-    [SerializeField] RectTransform contentScrollView;
+    [SerializeField] RectTransform pieseContentScrollView;
     [SerializeField] AppController appController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,23 +36,52 @@ public class UserInterfaceController : MonoBehaviour
     public void AdaugaArticol()
     {
         GameObject card =Instantiate(articolCard);
-        appController.cards.Add(card);
-        card.transform.parent = contentScrollView.transform;
-        card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,-335 -(appController.cards.Count-1)*80);
+        appController.cardsDeviz.Add(card);
+        card.transform.parent = pieseContentScrollView.transform;
+        card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,-335 -(appController.cardsDeviz.Count-1)*80);
         card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-        card.GetComponent<PieseCardController>().id=appController.cards.Count-1;
-        contentScrollView.sizeDelta = new Vector2(0, contentScrollView.sizeDelta.y + 85);
-        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cards.Count - 1) * 80);
-        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cards.Count - 1) * 80);
+        card.GetComponent<PieseCardController>().id=appController.cardsDeviz.Count-1;
+        pieseContentScrollView.sizeDelta = new Vector2(0, pieseContentScrollView.sizeDelta.y + 85);
+        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cardsDeviz.Count - 1) * 80);
+        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cardsDeviz.Count - 1) * 80);
     }
     public void UpdateCardPositions()
     {
-        for(int i = 0; i < appController.cards.Count;i++)
+        for(int i = 0; i < appController.cardsDeviz.Count;i++)
         {
-            appController.cards[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -335 - i * 80);
-            appController.cards[i].GetComponent<PieseCardController>().id = i;
+            appController.cardsDeviz[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -335 - i * 80);
+            appController.cardsDeviz[i].GetComponent<PieseCardController>().id = i;
         }
-        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cards.Count - 1) * 80);
-        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cards.Count - 1) * 80);
+        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cardsDeviz.Count - 1) * 80);
+        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cardsDeviz.Count - 1) * 80);
+    }
+    public void ResetButtons()
+    {
+        addButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(-570, -390 - (appController.cardsDeviz.Count - 1) * 80);
+        finishButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(490, -390 - (appController.cardsDeviz.Count - 1) * 80);
+    }
+    public void ResetListaClienti()
+    {
+        for (int i = 0; i < cardsClient.Count; i++)
+        {
+            Destroy(cardsClient[i]);
+        }
+        cardsClient.Clear();
+        CreareListaClienti();
+    }
+    public void CreareListaClienti()
+    {
+        clientiContentScrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,70*appController.clients.Count);
+        appController.clients = appController.clients.OrderByDescending(c => c.data).ToList();
+        for(int i = 0; i<appController.clients.Count;i++)
+        {
+            GameObject card = Instantiate(cardClient);
+            cardsClient.Add(card);
+            card.transform.parent = clientiContentScrollView.transform;
+            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
+            card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            card.GetComponent<ClientCardController>().clientData = appController.clients[i];
+            card.GetComponent<ClientCardController>().ShowDataClient();
+        }
     }
 }

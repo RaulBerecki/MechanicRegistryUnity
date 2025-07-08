@@ -32,4 +32,13 @@ public class PieseCardController : MonoBehaviour
         else
             return null;
     }
+    public void ResetCard()
+    {
+        codArticolInput.text = string.Empty;
+        descriereInput.text = string.Empty;
+        magazinInput.text = string.Empty;
+        bucInput.text = string.Empty;
+        pretInput.text = string.Empty;
+        int id = 0;
+    }
 }

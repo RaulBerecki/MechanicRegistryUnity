@@ -18,7 +18,7 @@ public class AppController : MonoBehaviour
     string documentsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
     string folderPath;
     string filePath;
-    public List<Client> clients;
+    public List<Client> clients,menuClients;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -108,7 +108,7 @@ public class AppController : MonoBehaviour
         {
             string json = File.ReadAllText(filePath);
             clients = JsonConvert.DeserializeObject<List<Client>>(json);
-
+            menuClients = clients;
             if (clients == null)
                 clients = new List<Client>();
         }

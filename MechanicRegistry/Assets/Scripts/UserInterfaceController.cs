@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -8,6 +9,8 @@ public class UserInterfaceController : MonoBehaviour
     //Menu
     [SerializeField] GameObject cardClient,clientiContentScrollView;
     [SerializeField] List<GameObject> cardsClient;
+    [SerializeField] TMP_InputField nrInmatriculareSearchInput, nrSerieSearchInput;
+    bool descData,descSuma;
     //Deviz
     [SerializeField] GameObject mainMenu, devizMenu, vizualizareMenu, articolCard,addButton,finishButton;
     [SerializeField] RectTransform pieseContentScrollView;
@@ -22,6 +25,8 @@ public class UserInterfaceController : MonoBehaviour
         mainMenu.SetActive(true);
         devizMenu.SetActive(false);
         vizualizareMenu.SetActive(false);
+        descData = true;
+        descSuma = false;
     }
 
     // Update is called once per frame
@@ -34,7 +39,6 @@ public class UserInterfaceController : MonoBehaviour
         mainMenu.SetActive(true);
         devizMenu.SetActive(false);
         vizualizareMenu.SetActive(false);
-        ResetVizualizareCard();
     }
     public void CreareDeviz()
     {
@@ -88,15 +92,117 @@ public class UserInterfaceController : MonoBehaviour
     public void CreareListaClienti()
     {
         clientiContentScrollView.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,70*appController.clients.Count);
-        appController.clients = appController.clients.OrderByDescending(c => c.data).ToList();
-        for(int i = 0; i<appController.clients.Count;i++)
+        appController.menuClients = appController.clients.OrderByDescending(c => c.data).ToList();
+        for(int i = 0; i<appController.menuClients.Count;i++)
         {
             GameObject card = Instantiate(cardClient);
             cardsClient.Add(card);
             card.transform.parent = clientiContentScrollView.transform;
             card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
             card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            card.GetComponent<ClientCardController>().clientData = appController.clients[i];
+            card.GetComponent<ClientCardController>().clientData = appController.menuClients[i];
+            card.GetComponent<ClientCardController>().ShowDataClient();
+        }
+    }
+    public void CautareInmatriculare()
+    {
+        for (int i = 0; i < cardsClient.Count; i++)
+        {
+            Destroy(cardsClient[i]);
+        }
+        cardsClient.Clear();
+        if(appController.menuClients.Count != appController.clients.Count)
+            appController.menuClients = appController.menuClients.Where(c => c.nrInmatriculare.IndexOf(nrInmatriculareSearchInput.text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        else
+            appController.menuClients = appController.clients.Where(c => c.nrInmatriculare.IndexOf(nrInmatriculareSearchInput.text,StringComparison.OrdinalIgnoreCase)>=0).ToList();
+        appController.menuClients = appController.menuClients.OrderByDescending(c => c.data).ToList();
+        for (int i = 0; i < appController.menuClients.Count; i++)
+        {
+            GameObject card = Instantiate(cardClient);
+            cardsClient.Add(card);
+            card.transform.parent = clientiContentScrollView.transform;
+            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
+            card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            card.GetComponent<ClientCardController>().clientData = appController.menuClients[i];
+            card.GetComponent<ClientCardController>().ShowDataClient();
+        }
+    }
+    public void CautareSerie()
+    {
+        for (int i = 0; i < cardsClient.Count; i++)
+        {
+            Destroy(cardsClient[i]);
+        }
+        cardsClient.Clear();
+        if(appController.menuClients.Count!= appController.clients.Count)
+            appController.menuClients = appController.menuClients.Where(c => c.serieSasiu.IndexOf(nrSerieSearchInput.text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        else
+            appController.menuClients = appController.clients.Where(c => c.serieSasiu.IndexOf(nrSerieSearchInput.text, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        appController.menuClients = appController.menuClients.OrderByDescending(c => c.data).ToList();
+        for (int i = 0; i < appController.menuClients.Count; i++)
+        {
+            GameObject card = Instantiate(cardClient);
+            cardsClient.Add(card);
+            card.transform.parent = clientiContentScrollView.transform;
+            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
+            card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            card.GetComponent<ClientCardController>().clientData = appController.menuClients[i];
+            card.GetComponent<ClientCardController>().ShowDataClient();
+        }
+    }
+    public void SortareData()
+    {
+        for (int i = 0; i < cardsClient.Count; i++)
+        {
+            Destroy(cardsClient[i]);
+        }
+        cardsClient.Clear();
+        if (descData)
+        {
+            appController.menuClients = appController.menuClients.OrderBy(c => c.data).ToList();
+            descData = false;
+        }
+        else
+        {
+            appController.menuClients = appController.menuClients.OrderByDescending(c => c.data).ToList();
+            descData=true;
+        }
+        for (int i = 0; i < appController.menuClients.Count; i++)
+        {
+            GameObject card = Instantiate(cardClient);
+            cardsClient.Add(card);
+            card.transform.parent = clientiContentScrollView.transform;
+            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
+            card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            card.GetComponent<ClientCardController>().clientData = appController.menuClients[i];
+            card.GetComponent<ClientCardController>().ShowDataClient();
+        }
+    }
+    public void SortareSuma()
+    {
+        for (int i = 0; i < cardsClient.Count; i++)
+        {
+            Destroy(cardsClient[i]);
+        }
+        cardsClient.Clear();
+        if (descSuma)
+        {
+            appController.menuClients = appController.menuClients.OrderBy(c => c.sumaTotala).ToList();
+            descSuma = false;
+        }
+        else
+        {
+            appController.menuClients = appController.menuClients.OrderByDescending(c => c.sumaTotala).ToList();
+            descSuma = true;
+        }
+        for (int i = 0; i < appController.menuClients.Count; i++)
+        {
+            GameObject card = Instantiate(cardClient);
+            cardsClient.Add(card);
+            card.transform.parent = clientiContentScrollView.transform;
+            card.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -35 - i * 70);
+            card.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            card.GetComponent<ClientCardController>().clientData = appController.menuClients[i];
             card.GetComponent<ClientCardController>().ShowDataClient();
         }
     }

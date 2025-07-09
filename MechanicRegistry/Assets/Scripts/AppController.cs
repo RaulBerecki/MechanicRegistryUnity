@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class AppController : MonoBehaviour
@@ -22,7 +21,7 @@ public class AppController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        Screen.SetResolution(1280, 720, false);
         // Step 2: Combine paths
         folderPath = Path.Combine(documentsPath, folderName);
         filePath = Path.Combine(folderPath, fileName);
